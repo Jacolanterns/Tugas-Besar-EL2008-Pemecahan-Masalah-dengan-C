@@ -268,17 +268,22 @@ void hapusRiwayatMedis() {
 }
 
 // Menampilkan riwayat medis berdasarkan ID pasien
-void tampilkanRiwayatMedis() {
+void tampilkanRiwayatMedis(char input_id[15]) {
     char id_pasien[15];
-    printf("Masukkan ID pasien: ");
-    scanf(" %[^\n]", id_pasien);
+    if(input_id[0] == 'K'){
+        strcpy(id_pasien, input_id);
+    }
+    else{
+        printf("Masukkan ID pasien: ");
+        scanf(" %[^\n]", id_pasien);
+    }
+
     for (int i = 1; i < jumlah_riwayat+1; i++) {
         char tempString[25];
         strcpy(tempString, riwayat[i].id_pasien);
         tempString[10] = '\0';
         //printf("Pencarian ke-%d (riwayat[i].id_pasien=%s) ... (%s)\n", i, riwayat[i].id_pasien, id_pasien);
         if (strcmp(tempString, id_pasien) == 0) {
-            printf("Ketemu !!!\n");
             printf("ID: %d\n", riwayat[i].id);
             printf("Tanggal: %s\n", riwayat[i].tanggal);
             printf("Diagnosis: %s\n", riwayat[i].diagnosis);
@@ -311,7 +316,7 @@ void displayPatientWithMedicalRecords() {
     printf("No BPJS: %s\n", p.no_bpjs);
     printf("ID Pasien: %s\n", p.id_pasien);
     printf("\nRiwayat Medis:\n");
-    tampilkanRiwayatMedis();
+    tampilkanRiwayatMedis(id_pasien);
 }
 
 int main() {
@@ -357,7 +362,7 @@ int main() {
                 hapusRiwayatMedis();
                 break;
             case 8:
-                tampilkanRiwayatMedis();
+                tampilkanRiwayatMedis("L");
                 break;
             case 9:
                 displayPatientWithMedicalRecords();
