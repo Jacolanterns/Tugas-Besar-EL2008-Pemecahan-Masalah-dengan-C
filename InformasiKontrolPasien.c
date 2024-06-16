@@ -1,71 +1,38 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "header.h"
+#include "definisiFungsi.c"
 
 #define PASIEN_MAX 100
 #define RIWAYAT_MAX 100
 
-typedef struct {
-    int id;
-    char nama[50];
-    char alamat[100];
-    char kota[100];
-    char tempat_lahir[100];
-    char tanggal_lahir[50];
-    int umur;
-    char no_bpjs[20];
-    char id_pasien[10];
-} Pasien;
+// typedef struct {
+//     int id;
+//     char nama[50];
+//     char alamat[100];
+//     char kota[100];
+//     char tempat_lahir[100];
+//     char tanggal_lahir[50];
+//     int umur;
+//     char no_bpjs[20];
+//     char id_pasien[10];
+// } Pasien;
 
-typedef struct {
-    int id;
-    char tanggal[50];
-    char id_pasien[10];
-    char diagnosis[100];
-    char tindakan[100];
-    char tanggal_kontrol[50];
-    int biaya;
-} RiwayatMedis;
+// typedef struct {
+//     int id;
+//     char tanggal[50];
+//     char id_pasien[10];
+//     char diagnosis[100];
+//     char tindakan[100];
+//     char tanggal_kontrol[50];
+//     int biaya;
+// } RiwayatMedis;
 
-Pasien pasien[PASIEN_MAX];
-RiwayatMedis riwayat[RIWAYAT_MAX];
-int jumlah_pasien = 0;
-int jumlah_riwayat = 0;
-
-// Fungsi untuk membaca dan memparsing data pasien dari file CSV
-void readPasienFromCSV(const char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        printf("Gagal membuka file %s.\n", filename);
-        return;
-    }
-    char line[256];
-    while (fgets(line, sizeof(line), file)) {
-        Pasien p;
-        sscanf(line, "%d,%[^,],%[^,],%[^,],%[^,],%[^,],%d,%[^,],%[^,\n]",
-               &p.id, p.nama, p.alamat, p.kota, p.tempat_lahir, p.tanggal_lahir,
-               &p.umur, p.no_bpjs, p.id_pasien);
-        pasien[jumlah_pasien++] = p;
-    }
-    fclose(file);
-}
-
-// Fungsi untuk membaca dan memparsing data riwayat medis dari file CSV
-void readRiwayatMedisFromCSV(const char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        printf("Gagal membuka file %s.\n", filename);
-        return;
-    }
-    char line[256];
-    while (fgets(line, sizeof(line), file)) {
-        RiwayatMedis r;
-        sscanf(line, "%d,%[^,],%[^,],%[^,],%[^,],%[^,],%d\n",
-               &r.id, r.tanggal, r.id_pasien, r.diagnosis, r.tindakan, r.tanggal_kontrol, &r.biaya);
-        riwayat[jumlah_riwayat++] = r;
-    }
-    fclose(file);
-}
+// Pasien pasien[PASIEN_MAX];
+// RiwayatMedis riwayat[RIWAYAT_MAX];
+// int jumlah_pasien = 0;
+// int jumlah_riwayat = 0;
 
 bool cekAdaStrip(char tanggal[50]){
     int i=0;
@@ -121,22 +88,16 @@ void ubahKeTanpaStrip(char* tanggalStrip) {
     strcpy(tanggalStrip, newTanggal);
 }
 
-// Mencari pasien berdasarkan ID Pasien
-int cariPasienID(const char* id_pasien) {
-    for (int i = 0; i < jumlah_pasien; i++) {
-        if (strcmp(pasien[i].id_pasien, id_pasien) == 0) {
-            return i;
-        }
-    }
-    return -1;
-}
-
 void informasiKontrolPasien() {
     bool found = false;
-    printf("Masukkan tanggal kontrol (YYYY-MM-DD): ");
+    printf("Masukkan tanggal kontrol (DD-MMM-YY): ");
     char inputTanggalKontrol[100];
-    scanf("%s", inputTanggalKontrol);
-    ubahKeTanpaStrip(inputTanggalKontrol);
+    scanf(" %[^\n]", inputTanggalKontrol);
+
+    if(cekAdaStrip(inputTanggalKontrol)){
+        ubahKeTanpaStrip(inputTanggalKontrol);
+    }
+
     int indexPasien;
     char temp[255];
     int count=0;
@@ -149,7 +110,7 @@ void informasiKontrolPasien() {
         temp[10] = '\0';
         indexPasien = cariPasienID(temp);
 
-        //printf("%d ... %s\n", indexPasien, temp);
+        //printf("%s ... %s\n", riwayat[i].tanggal_kontrol, inputTanggalKontrol);
         if(strcmp(riwayat[i].tanggal_kontrol, inputTanggalKontrol) == 0){
             found = true;
             count++;

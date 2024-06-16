@@ -1,5 +1,5 @@
-#ifndef STRUCT_H
-#define STRUCT_H
+#ifndef HEADER_H
+#define HEADER_H
 
 #define PASIEN_MAX 100
 #define RIWAYAT_MAX 100

@@ -1,4 +1,4 @@
-#include "struct.h"
+#include "header.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -40,4 +40,14 @@ void readRiwayatMedisFromCSV(const char *filename) {
         riwayat[jumlah_riwayat++] = r;
     }
     fclose(file);
+}
+
+// Mencari pasien berdasarkan ID Pasien
+int cariPasienID(const char* id_pasien) {
+    for (int i = 0; i < jumlah_pasien; i++) {
+        if (strcmp(pasien[i].id_pasien, id_pasien) == 0) {
+            return i;
+        }
+    }
+    return -1;
 }
