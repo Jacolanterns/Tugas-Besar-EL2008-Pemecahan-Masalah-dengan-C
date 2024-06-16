@@ -218,8 +218,12 @@ void tambahRiwayatMedis() {
 
 // Mencari riwayat medis berdasarkan ID Pasien
 int cariRiwayatMedisID(const char* id_pasien) {
-    for (int i = 0; i < jumlah_riwayat; i++) {
-        if (strcmp(riwayat[i].id_pasien, id_pasien) == 0) {
+    for (int i = 1; i < jumlah_riwayat+1; i++) {
+        char temp[100];
+        strcpy(temp, riwayat[i].id_pasien);
+        temp[10] = '\0';
+        // printf("Pencarian ke-%d: %s ... %s\n", i, temp, id_pasien);
+        if (strcmp(temp, id_pasien) == 0) {
             return i;
         }
     }
@@ -268,17 +272,22 @@ void hapusRiwayatMedis() {
 }
 
 // Menampilkan riwayat medis berdasarkan ID pasien
-void tampilkanRiwayatMedis() {
+void tampilkanRiwayatMedis(char dummy[10]) {
     char id_pasien[15];
-    printf("Masukkan ID pasien: ");
-    scanf(" %[^\n]", id_pasien);
+    if(dummy[0] == 'K'){
+        strcpy(id_pasien, dummy);
+    }
+    else{
+        printf("Masukkan ID pasien: ");
+        scanf(" %[^\n]", id_pasien);
+    }
+
     for (int i = 1; i < jumlah_riwayat+1; i++) {
         char tempString[25];
         strcpy(tempString, riwayat[i].id_pasien);
         tempString[10] = '\0';
         //printf("Pencarian ke-%d (riwayat[i].id_pasien=%s) ... (%s)\n", i, riwayat[i].id_pasien, id_pasien);
         if (strcmp(tempString, id_pasien) == 0) {
-            printf("Ketemu !!!\n");
             printf("ID: %d\n", riwayat[i].id);
             printf("Tanggal: %s\n", riwayat[i].tanggal);
             printf("Diagnosis: %s\n", riwayat[i].diagnosis);
@@ -311,7 +320,101 @@ void displayPatientWithMedicalRecords() {
     printf("No BPJS: %s\n", p.no_bpjs);
     printf("ID Pasien: %s\n", p.id_pasien);
     printf("\nRiwayat Medis:\n");
-    tampilkanRiwayatMedis();
+    tampilkanRiwayatMedis(p.id_pasien);
+}
+
+// cek apakah ada strip di tanggal (contoh: 1-Apr-98)
+bool cekAdaStrip(char tanggal[50]){
+    int i=0;
+    for(i=0;i<11;i++){
+        if('-' == tanggal[i]){
+            return true;
+        }
+    }
+    return false;
+}
+
+// ubah format tanggal dari (1-Apr-98) ke (1 April 1998)
+void ubahKeTanpaStrip(char* tanggalStrip) {
+    char newTanggal[100];
+    char* segment;
+    int day;
+    char month[10];
+    int year;
+    
+    // baca jadi 3 segment
+    sscanf(tanggalStrip, "%d-%3s-%2d", &day, month, &year);
+
+    // cek bulan
+    if (strcmp(month, "Jan") == 0) {
+        strcpy(month, "Januari");
+    } else if (strcmp(month, "Feb") == 0) {
+        strcpy(month, "Februari");
+    } else if (strcmp(month, "Mar") == 0) {
+        strcpy(month, "Maret");
+    } else if (strcmp(month, "Apr") == 0) {
+        strcpy(month, "April");
+    } else if (strcmp(month, "May") == 0) {
+        strcpy(month, "Mei");
+    } else if (strcmp(month, "Jun") == 0) {
+        strcpy(month, "Juni");
+    } else if (strcmp(month, "Jul") == 0) {
+        strcpy(month, "Juli");
+    } else if (strcmp(month, "Aug") == 0) {
+        strcpy(month, "Agustus");
+    } else if (strcmp(month, "Sep") == 0) {
+        strcpy(month, "September");
+    } else if (strcmp(month, "Oct") == 0) {
+        strcpy(month, "Oktober");
+    } else if (strcmp(month, "Nov") == 0) {
+        strcpy(month, "November");
+    } else if (strcmp(month, "Dec") == 0) {
+        strcpy(month, "Desember");
+    }
+
+    // ngegabung
+    sprintf(newTanggal, "%d %s 20%02d", day, month, year);
+    strcpy(tanggalStrip, newTanggal);
+}
+
+// menu 12
+void informasiKontrolPasien() {
+    bool found = false;
+    printf("Masukkan tanggal kontrol (DD-MMM-YY): ");
+    char inputTanggalKontrol[100];
+    //fgets(inputTanggalKontrol, 100, stdin);
+    //scanf("%[^\n]", inputTanggalKontrol);
+    scanf(" %[^\n]", inputTanggalKontrol);
+
+    if(cekAdaStrip(inputTanggalKontrol)){
+        ubahKeTanpaStrip(inputTanggalKontrol);
+    }
+    
+    int indexPasien;
+    char temp[255];
+    int count=0;
+
+    for(int i=0; i<jumlah_riwayat; i++){
+        if(cekAdaStrip(riwayat[i].tanggal_kontrol)){
+            ubahKeTanpaStrip(riwayat[i].tanggal_kontrol);
+        }
+        strcpy(temp, riwayat[i].id_pasien);
+        temp[10] = '\0';
+        indexPasien = cariPasienID(temp);
+
+        //printf("%s ... %s\n", riwayat[i].tanggal_kontrol, inputTanggalKontrol);
+        if(strcmp(riwayat[i].tanggal_kontrol, inputTanggalKontrol) == 0){
+            found = true;
+            count++;
+            printf("Pada tanggal %s, pasien ke-%d yang perlu kontrol adalah\nNama: %s\nUmur: %d\nDiagnosis: %s\nTindakan: %s\nBiaya: %d\nAlamat: %s\n\n",
+            inputTanggalKontrol, count, pasien[indexPasien].nama, pasien[indexPasien].umur, 
+            riwayat[i].diagnosis, riwayat[i].tindakan, riwayat[i].biaya, pasien[indexPasien].alamat);
+        }
+    }
+
+    if (!found) {
+        printf("Tidak ada pasien yang perlu kembali kontrol.\n");
+    }
 }
 
 int main() {
@@ -331,6 +434,9 @@ int main() {
         printf("7. Hapus Riwayat Medis\n");
         printf("8. Tampilkan Riwayat Medis\n");
         printf("9. Tampilkan Pasien dan Riwayat Medis\n");
+        printf("10. ---\n");
+        printf("11. ---\n");
+        printf("12. Tampilkan pasien yang perlu kontrol (input berupa tanggal kontrol)\n");
         printf("0. Keluar\n");
         printf("Pilihan: ");
         scanf("%d", &choice);
@@ -357,10 +463,17 @@ int main() {
                 hapusRiwayatMedis();
                 break;
             case 8:
-                tampilkanRiwayatMedis();
+                tampilkanRiwayatMedis("abc");
                 break;
             case 9:
                 displayPatientWithMedicalRecords();
+                break;
+            case 10:
+                break;
+            case 11:
+                break;
+            case 12:
+                informasiKontrolPasien();
                 break;
             case 0:
                 printf("Keluar dari program.\n");
