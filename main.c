@@ -810,7 +810,7 @@ int main() {
     // Read data from CSV files
     readPasienFromCSV("DataPMC20232024.csv");
 
-    int jumlahRekam;
+    int jumlahRekam_4;
     readRiwayatMedisFromCSV("Riwayat_Datang_Pasien.csv");
     
 
@@ -862,8 +862,8 @@ int main() {
                 break;
             case 10:
                 kosongkanRekam();
-                jumlahRekam = muatRekamMedisPasien(rekam, "Riwayat_Datang_Pasien.csv");
-                hitungPendapatanBulananDanTahunan(rekam, jumlahRekam);
+                jumlahRekam_4 = muatRekamMedisPasien(rekam, "Riwayat_Datang_Pasien.csv");
+                hitungPendapatanBulananDanTahunan(rekam, jumlahRekam_4);
                 break;
             case 11:
                 distribusiPenyakit();
