@@ -33,7 +33,7 @@ int bulanKeInt(char *bulan);
 
 // Fungsi utama
 int main() {
-    RekamMedisPasien rekam[MAX_PASIEN];
+    // RekamMedisPasien rekam[MAX_PASIEN];
     int jumlahRekam = muatRekamMedisPasien(rekam, "Riwayat_Datang_Pasien.csv");
 
     hitungPendapatanBulananDanTahunan(rekam, jumlahRekam);
@@ -50,7 +50,7 @@ int muatRekamMedisPasien(RekamMedisPasien rekam[], const char *namaFile) {
     }
 
     char baris[200];
-    int jumlah = 0;
+    // int jumlah = 0;
 
     // Melewati header
     fgets(baris, sizeof(baris), file);

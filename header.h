@@ -4,6 +4,8 @@
 #define PASIEN_MAX 100
 #define RIWAYAT_MAX 100
 #define MAX_TAHUN 10
+#define MAX_RECORDS 1000
+#define MAX_STRING 50
 
 typedef struct {
     int id;
@@ -36,13 +38,35 @@ typedef struct {
 
 // Struktur untuk menyimpan rekam medis pasien
 typedef struct {
-    char id[20];
+    char id[200];
     Tanggal tanggalKunjungan;
     char diagnosis[50];
     char tindakan[50];
     Tanggal tanggalKontrol;
     int biaya;
 } RekamMedisPasien;
+
+typedef struct {
+    char tanggal[MAX_STRING];
+    char idPasien[MAX_STRING];
+    char diagnosis[MAX_STRING];
+    char tindakan[MAX_STRING];
+    char tindakLanjut[MAX_STRING];
+    int biaya;
+} RekamMedis;
+
+typedef struct {
+    int bulan;
+    int tahun;
+    char diagnosis[MAX_STRING];
+    int jumlah;
+} JumlahDiagnosisBulanan;
+
+typedef struct {
+    int tahun;
+    char diagnosis[MAX_STRING];
+    int jumlah;
+} JumlahDiagnosisTahunan;
 
 void parsingData();
 void tambahPasien();

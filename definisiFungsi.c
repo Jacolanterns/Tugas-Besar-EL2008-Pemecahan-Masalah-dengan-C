@@ -7,6 +7,7 @@ RiwayatMedis riwayat[RIWAYAT_MAX];
 RekamMedisPasien rekam[PASIEN_MAX];
 int jumlah_pasien = 0;
 int jumlah_riwayat = 0;
+int jumlah;
 
 // Fungsi untuk membaca dan memparsing data pasien dari file CSV
 void readPasienFromCSV(const char *filename) {
@@ -78,21 +79,21 @@ void ubahKeTanpaStrip(char* tanggalStrip) {
         strcpy(month, "Maret");
     } else if (strcmp(month, "Apr") == 0) {
         strcpy(month, "April");
-    } else if (strcmp(month, "May") == 0) {
+    } else if (strcmp(month, "Mei") == 0) {
         strcpy(month, "Mei");
     } else if (strcmp(month, "Jun") == 0) {
         strcpy(month, "Juni");
     } else if (strcmp(month, "Jul") == 0) {
         strcpy(month, "Juli");
-    } else if (strcmp(month, "Aug") == 0) {
+    } else if (strcmp(month, "Agu") == 0) {
         strcpy(month, "Agustus");
     } else if (strcmp(month, "Sep") == 0) {
         strcpy(month, "September");
-    } else if (strcmp(month, "Oct") == 0) {
+    } else if (strcmp(month, "Okt") == 0) {
         strcpy(month, "Oktober");
     } else if (strcmp(month, "Nov") == 0) {
         strcpy(month, "November");
-    } else if (strcmp(month, "Dec") == 0) {
+    } else if (strcmp(month, "Des") == 0) {
         strcpy(month, "Desember");
     }
 

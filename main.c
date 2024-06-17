@@ -5,9 +5,6 @@
 #include "header.h"
 #include "definisiFungsi.c"
 
-#define PASIEN_MAX 100
-#define RIWAYAT_MAX 100
-
 // Pasien pasien[PASIEN_MAX];
 // RiwayatMedis riwayat[RIWAYAT_MAX];
 // int jumlah_pasien = 0;
@@ -49,13 +46,22 @@
 // }
 
 // Fungsi untuk mengecek duplikasi data pasien berdasarkan nama atau nomor BPJS
-bool isDuplicatePasien(const char *nama, const char *no_bpjs) {
+bool isDuplicatePasien_nama(const char *nama) {
     for (int i = 0; i < jumlah_pasien; i++) {
-        if (strcmp(pasien[i].nama, nama) == 0 || strcmp(pasien[i].no_bpjs, no_bpjs) == 0) {
+        if (strcmp(pasien[i].nama, nama) == 0){
             return true; // Duplikat ditemukan
         }
     }
     return false; // Tidak ada duplikat
+}
+
+bool isDuplicatePasien_bpjs(const char *no_bpjs){
+    for(int i=0; i< jumlah_pasien; i++){
+        if(strcmp(pasien[i].no_bpjs, no_bpjs) == 0){
+            return true;
+        }
+    }
+    return false;
 }
 
 // Menambah pasien baru
@@ -68,6 +74,10 @@ void tambahPasien() {
     pasien_baru.id = jumlah_pasien + 1;
     printf("Masukkan nama pasien: ");
     scanf(" %[^\n]", pasien_baru.nama);
+    if(isDuplicatePasien_nama(pasien_baru.nama)){
+        printf("Pasien dengan nama tersebut sudah ada.\n");
+        return;
+    }
     printf("Masukkan alamat: ");
     scanf(" %[^\n]", pasien_baru.alamat);
     printf("Masukkan kota: ");
@@ -76,18 +86,17 @@ void tambahPasien() {
     scanf(" %[^\n]", pasien_baru.tempat_lahir);
     printf("(*contoh input tanggal: 18-Jun-22 atau 18 Juni 2022)\n");
     printf("Masukkan tanggal lahir: ");
-    scanf(" %s", pasien_baru.tanggal_lahir);
+    scanf(" %[^\n]", pasien_baru.tanggal_lahir);
     printf("Masukkan umur: ");
     scanf("%d", &pasien_baru.umur);
     printf("Masukkan nomor BPJS: ");
     scanf(" %s", pasien_baru.no_bpjs);
-    printf("Masukkan ID pasien: ");
-    scanf(" %[^\n]", pasien_baru.id_pasien);
-
-    if (isDuplicatePasien(pasien_baru.nama, pasien_baru.no_bpjs)) {
-        printf("Pasien dengan nama atau nomor BPJS tersebut sudah ada.\n");
+    if(isDuplicatePasien_bpjs(pasien_baru.no_bpjs)){
+        printf("Pasien dengan nomor BPJS tersebut sudah ada\n.");
         return;
     }
+    printf("Masukkan ID pasien: ");
+    scanf(" %[^\n]", pasien_baru.id_pasien);
 
     pasien[jumlah_pasien++] = pasien_baru;
     printf("Pasien berhasil ditambahkan.\n");
@@ -126,7 +135,7 @@ void updatePasien() {
     scanf(" %[^\n]", p->tempat_lahir);
     printf("(*contoh input tanggal: 18-Jun-22 atau 18 Juni 2022)\n");
     printf("Masukkan tanggal lahir baru: ");
-    scanf(" %s", p->tanggal_lahir);
+    scanf(" %[^\n]", p->tanggal_lahir);
     printf("Masukkan umur baru: ");
     scanf("%d", &p->umur);
     printf("Masukkan nomor BPJS baru: ");
@@ -173,44 +182,6 @@ void tampilkanPasien() {
     printf("ID Pasien: %s\n", p.id_pasien);
 }
 
-// Menambah riwayat medis baru
-void tambahRiwayatMedis() {
-    if (jumlah_riwayat >= RIWAYAT_MAX) {
-        printf("Data riwayat medis penuh.\n");
-        return;
-    }
-    RiwayatMedis riwayat_baru;
-    riwayat_baru.id = jumlah_riwayat + 1;
-    printf("(*contoh input tanggal: 18-Jun-22 atau 18 Juni 2022)\n");
-    printf("Masukkan tanggal: ");
-    scanf(" %s", riwayat_baru.tanggal);
-    printf("Masukkan ID pasien: ");
-    scanf(" %[^\n]", riwayat_baru.id_pasien);
-    printf("Masukkan diagnosis: ");
-    scanf(" %[^\n]", riwayat_baru.diagnosis);
-    printf("Masukkan tindakan: ");
-    scanf(" %[^\n]", riwayat_baru.tindakan);
-    printf("(*contoh input tanggal: 18-Jun-22 atau 18 Juni 2022)\n");
-    printf("Masukkan tanggal kontrol: ");
-    scanf(" %s", riwayat_baru.tanggal_kontrol);
-    printf("Masukkan biaya: ");
-    scanf("%d", &riwayat_baru.biaya);
-    riwayat[jumlah_riwayat++] = riwayat_baru;
-    printf("Riwayat medis berhasil ditambahkan.\n");
-
-    // Append the new medical record data to the CSV file
-    FILE *file = fopen("Riwayat_Datang_Pasien.csv", "a");
-    if (file == NULL) {
-        printf("Gagal membuka file Riwayat_Datang_Pasien.csv.\n");
-        return;
-    }
-    fprintf(file, "%d,%s,%s,%s,%s,%s,%d\n",
-            riwayat_baru.id, riwayat_baru.tanggal, riwayat_baru.id_pasien, 
-            riwayat_baru.diagnosis, riwayat_baru.tindakan, riwayat_baru.tanggal_kontrol, 
-            riwayat_baru.biaya);
-    fclose(file);
-}
-
 // Mencari riwayat medis berdasarkan ID Pasien
 int cariRiwayatMedisID(const char* id_pasien) {
     for (int i = 1; i < jumlah_riwayat+1; i++) {
@@ -237,15 +208,15 @@ void updateRiwayatMedis() {
     }
     RiwayatMedis *r = &riwayat[index];
     printf("(*contoh input tanggal: 18-Jun-22 atau 18 Juni 2022)\n");
-    printf("Masukkan tanggal baru: ");
-    scanf(" %s", r->tanggal);
+    printf("Masukkan tanggal kedatangan baru: ");
+    scanf(" %[^\n]", r->tanggal);
     printf("Masukkan diagnosis baru: ");
     scanf(" %[^\n]", r->diagnosis);
     printf("Masukkan tindakan baru: ");
     scanf(" %[^\n]", r->tindakan);
     printf("(*contoh input tanggal: 18-Jun-22 atau 18 Juni 2022)\n");
     printf("Masukkan tanggal kontrol baru: ");
-    scanf(" %s", r->tanggal_kontrol);
+    scanf(" %[^\n]", r->tanggal_kontrol);
     printf("Masukkan biaya baru: ");
     scanf("%d", &r->biaya);
     printf("Riwayat medis berhasil diubah.\n");
@@ -279,7 +250,7 @@ void tampilkanRiwayatMedis(char dummy[10]) {
         scanf(" %[^\n]", id_pasien);
     }
 
-    for (int i = 1; i < jumlah_riwayat+1; i++) {
+    for (int i = 1; i < jumlah_riwayat; i++) {
         char tempString[25];
         strcpy(tempString, riwayat[i].id_pasien);
         tempString[10] = '\0';
@@ -384,17 +355,20 @@ int muatRekamMedisPasien(RekamMedisPasien rekam[], const char *namaFile) {
         exit(EXIT_FAILURE);
     }
 
-    char baris[200];
-    int jumlah = 0;
+    char baris[500];
 
     // Melewati header
     fgets(baris, sizeof(baris), file);
 
     while (fgets(baris, sizeof(baris), file) && jumlah < PASIEN_MAX) {
         char tanggal[20], tanggalKontrol[20], bulan[10];
-        sscanf(baris, "%*d,%19[^,],%19[^,],%49[^,],%49[^,],%19[^,],%d", tanggal, rekam[jumlah].id, rekam[jumlah].diagnosis, rekam[jumlah].tindakan, tanggalKontrol, &rekam[jumlah].biaya);
-
+        sscanf(baris, "%*d,%200[^,],%19[^,],%49[^,],%49[^,],%19[^,],%d", tanggal, rekam[jumlah].id, rekam[jumlah].diagnosis, rekam[jumlah].tindakan, tanggalKontrol, &rekam[jumlah].biaya);
+        
+        //printf("Sebelum: %s ", rekam[jumlah].id);
+        //rekam[jumlah].id[10] = '\0';
+        //printf("--- Sesudah: %s\n", rekam[jumlah].id);
         // Mengubah format tanggal jika ada strip
+
         if (cekAdaStrip(tanggal)) {
             ubahKeTanpaStrip(tanggal);
         }
@@ -463,12 +437,382 @@ void hitungPendapatanBulananDanTahunan(RekamMedisPasien rekam[], int jumlahRekam
     }
 }
 
+// Menambah riwayat medis baru
+void tambahRiwayatMedis() {
+    if (jumlah_riwayat >= RIWAYAT_MAX) {
+        printf("Data riwayat medis penuh.\n");
+        return;
+    }
+    RiwayatMedis riwayat_baru;
+    riwayat_baru.id = jumlah_riwayat + 1;
+    char tanggal[20], tanggalKontrol[20], bulan[10];
+
+    printf("(*contoh input tanggal: 18-Jun-22 atau 18 Juni 2022)\n");
+    printf("Masukkan tanggal kedatangan: ");
+    scanf(" %[^\n]", riwayat_baru.tanggal);
+    // strcpy(tanggal, riwayat_baru.tanggal);
+    printf("Masukkan ID pasien: ");
+    scanf(" %[^\n]", riwayat_baru.id_pasien);
+    // strcpy(rekam[jumlah].id, riwayat_baru.id_pasien);
+    printf("Masukkan diagnosis: ");
+    scanf(" %[^\n]", riwayat_baru.diagnosis);
+    //strcpy(rekam[jumlah].diagnosis, riwayat_baru.diagnosis);
+    printf("Masukkan tindakan: ");
+    scanf(" %[^\n]", riwayat_baru.tindakan);
+    //strcpy(rekam[jumlah].tindakan, riwayat_baru.tindakan);
+    printf("(*contoh input tanggal: 18-Jun-22 atau 18 Juni 2022)\n");
+    printf("Masukkan tanggal kontrol: ");
+    scanf(" %[^\n]", riwayat_baru.tanggal_kontrol);
+    //strcpy(tanggalKontrol, riwayat_baru.tanggal_kontrol);
+    printf("Masukkan biaya: ");
+    scanf("%d", &riwayat_baru.biaya);
+    //rekam[jumlah].biaya = riwayat_baru.biaya;
+    riwayat[jumlah_riwayat++] = riwayat_baru;
+    printf("Riwayat medis berhasil ditambahkan.\n");
+
+    // handle bug diagnosis dan id_pasien yang kegabung stringnya
+    char temp[255] = {0};
+    int j = 0;
+    for(int i=10;riwayat_baru.id_pasien[i] != '\0';i++){
+
+            temp[j] = riwayat_baru.id_pasien[i];
+            j++;
+        
+    }
+    temp[j] = '\0';
+    
+    strcpy(riwayat_baru.diagnosis, temp);
+    riwayat_baru.id_pasien[10] = '\0';
+
+    // Append the new medical record data to the CSV file
+    FILE *file = fopen("Riwayat_Datang_Pasien.csv", "a");
+    if (file == NULL) {
+        printf("Gagal membuka file Riwayat_Datang_Pasien.csv.\n");
+        return;
+    }
+    fprintf(file, "%d,%s,%s,%s,%s,%s,%d\n",
+            riwayat_baru.id, riwayat_baru.tanggal, riwayat_baru.id_pasien, 
+            temp, riwayat_baru.tindakan, riwayat_baru.tanggal_kontrol, 
+            riwayat_baru.biaya);
+    fclose(file);
+}
+
+void kosongkanRekam() {
+    memset(rekam, 0, sizeof(rekam));
+    jumlah = 0;
+}
+
+// Fitur 5
+void parseRekamMedis(char* line, RekamMedis* rekam) {
+    char* token = strtok(line, ",");
+    int kolom = 0;
+
+    while (token != NULL) {
+        switch (kolom) {
+            case 0: // Skip No
+                break;
+            case 1:
+                strcpy(rekam->tanggal, token);
+                break;
+            case 2:
+                strcpy(rekam->idPasien, token);
+                break;
+            case 3:
+                strcpy(rekam->diagnosis, token);
+                break;
+            case 4:
+                strcpy(rekam->tindakan, token);
+                break;
+            case 5:
+                strcpy(rekam->tindakLanjut, token);
+                break;
+            case 6:
+                rekam->biaya = atoi(token);
+                break;
+        }
+        token = strtok(NULL, ",");
+        kolom++;
+    }
+}
+
+int namaBulanDanTahun(const char* tanggal, int* bulan, int* tahun) {
+    char buffer[MAX_STRING];
+    strcpy(buffer, tanggal);
+    char* token = strtok(buffer, " -/");
+
+    if (token == NULL) return 0;
+
+    // Check if month is in "dd Month yyyy" format
+    if (strchr(tanggal, ' ') != NULL) {
+        // Format "dd Month yyyy"
+        char day[MAX_STRING];
+        char monthStr[MAX_STRING];
+        char yearStr[MAX_STRING];
+        sscanf(tanggal, "%s %s %s", day, monthStr, yearStr);
+
+        if (strcmp(monthStr, "Januari") == 0) *bulan = 1;
+        else if (strcmp(monthStr, "Februari") == 0) *bulan = 2;
+        else if (strcmp(monthStr, "Maret") == 0) *bulan = 3;
+        else if (strcmp(monthStr, "April") == 0) *bulan = 4;
+        else if (strcmp(monthStr, "Mei") == 0) *bulan = 5;
+        else if (strcmp(monthStr, "Juni") == 0) *bulan = 6;
+        else if (strcmp(monthStr, "Juli") == 0) *bulan = 7;
+        else if (strcmp(monthStr, "Agustus") == 0) *bulan = 8;
+        else if (strcmp(monthStr, "September") == 0) *bulan = 9;
+        else if (strcmp(monthStr, "Oktober") == 0) *bulan = 10;
+        else if (strcmp(monthStr, "November") == 0) *bulan = 11;
+        else if (strcmp(monthStr, "Desember") == 0) *bulan = 12;
+        else *bulan = 0;
+
+        *tahun = atoi(yearStr);
+    } else { //4-Jan-22
+        char tanggal2[255] = {0};
+        strcpy(tanggal2, tanggal);
+        ubahKeTanpaStrip(tanggal2);
+        char* iterate = strtok(tanggal2, " ");
+        iterate = strtok(NULL, " ");
+        // printf("iterate1: %s\n", iterate);
+        if (strcmp(iterate, "Januari") == 0) *bulan = 1;
+        else if (strcmp(iterate, "Februari") == 0) *bulan = 2;
+        else if (strcmp(iterate, "Maret") == 0) *bulan = 3;
+        else if (strcmp(iterate, "April") == 0) *bulan = 4;
+        else if (strcmp(iterate, "Mei") == 0) *bulan = 5;
+        else if (strcmp(iterate, "Juni") == 0) *bulan = 6;
+        else if (strcmp(iterate, "Juli") == 0) *bulan = 7;
+        else if (strcmp(iterate, "Agustus") == 0) *bulan = 8;
+        else if (strcmp(iterate, "September") == 0) *bulan = 9;
+        else if (strcmp(iterate, "Oktober") == 0) *bulan = 10;
+        else if (strcmp(iterate, "November") == 0) *bulan = 11;
+        else if (strcmp(iterate, "Desember") == 0) *bulan = 12;
+        else *bulan = 0;
+        
+        
+        iterate = strtok(NULL, " ");
+        // printf("iterate2: %s\n\n", iterate);
+        *tahun = atoi(iterate);
+
+
+        // // Format "dd-mm-yyyy" or "yyyy-mm-dd"
+        // int dateParts[3];
+        // int i = 0;
+        // while (token != NULL && i < 3) {
+        //     dateParts[i++] = atoi(token);
+        //     token = strtok(NULL, " -/");
+        // }
+
+        // if (i == 3) {
+        //     if (dateParts[2] > 1000) { // Assuming the format is dd-mm-yyyy
+        //         *bulan = dateParts[1];
+        //         *tahun = dateParts[2];
+        //     } else if (dateParts[0] > 1000) { // Assuming the format is yyyy-mm-dd
+        //         *bulan = dateParts[1];
+        //         *tahun = dateParts[0];
+        //     } else {
+        //         return 0; // Invalid date format
+        //     }
+        // } else {
+        //     return 0; // Invalid date format
+        // }
+    }
+
+    if (*tahun < 1000 || *tahun > 9999 || *bulan < 1 || *bulan > 12) {
+        return 0; // Invalid year or month
+    }
+
+    return 1;
+}
+
+const char* nomorBulanKeNama(int bulan) {
+    switch (bulan) {
+        case 1: return "Januari";
+        case 2: return "Februari";
+        case 3: return "Maret";
+        case 4: return "April";
+        case 5: return "Mei";
+        case 6: return "Juni";
+        case 7: return "Juli";
+        case 8: return "Agustus";
+        case 9: return "September";
+        case 10: return "Oktober";
+        case 11: return "November";
+        case 12: return "Desember";
+        default: return "Unknown";
+    }
+}
+
+int temukanDiagnosisBulanan(JumlahDiagnosisBulanan* hitungan, int ukuranHitungan, int bulan, int tahun, const char* diagnosis) {
+    for (int i = 0; i < ukuranHitungan; i++) {
+        if (hitungan[i].tahun == tahun && hitungan[i].bulan == bulan && strcmp(hitungan[i].diagnosis, diagnosis) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int temukanDiagnosisTahunan(JumlahDiagnosisTahunan* hitungan, int ukuranHitungan, int tahun, const char* diagnosis) {
+    for (int i = 0; i < ukuranHitungan; i++) {
+        if (hitungan[i].tahun == tahun && strcmp(hitungan[i].diagnosis, diagnosis) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int bandingkanHitungan(const void* a, const void* b) {
+    JumlahDiagnosisBulanan* hitunganA = (JumlahDiagnosisBulanan*)a;
+    JumlahDiagnosisBulanan* hitunganB = (JumlahDiagnosisBulanan*)b;
+
+    if (hitunganA->tahun != hitunganB->tahun) return hitunganA->tahun - hitunganB->tahun;
+    if (hitunganA->bulan != hitunganB->bulan) return hitunganA->bulan - hitunganB->bulan;
+    return hitunganB->jumlah - hitunganA->jumlah;
+}
+
+int bandingkanHitunganTahunan(const void* a, const void* b) {
+    JumlahDiagnosisTahunan* hitunganA = (JumlahDiagnosisTahunan*)a;
+    JumlahDiagnosisTahunan* hitunganB = (JumlahDiagnosisTahunan*)b;
+
+    if (hitunganA->tahun != hitunganB->tahun) return hitunganA->tahun - hitunganB->tahun;
+    return hitunganB->jumlah - hitunganA->jumlah;
+}
+
+void cetakHasilBulanan(JumlahDiagnosisBulanan* hitungan, int ukuranHitungan) {
+    int tahunSaatIni = -1;
+    int bulanSaatIni = -1;
+    int peringkat = 1;
+
+    for (int i = 0; i < ukuranHitungan; i++) {
+        if (hitungan[i].tahun != tahunSaatIni) {
+            tahunSaatIni = hitungan[i].tahun;
+            printf("\nTahun %d\n", tahunSaatIni);
+            bulanSaatIni = -1;
+        }
+
+        if (hitungan[i].bulan != bulanSaatIni) {
+            bulanSaatIni = hitungan[i].bulan;
+            peringkat = 1;
+            printf("Bulan %s:\n", nomorBulanKeNama(bulanSaatIni));
+        }
+
+        printf("%d. %s (%d orang)\n", peringkat++, hitungan[i].diagnosis, hitungan[i].jumlah);
+    }
+}
+
+void cetakHasilTahunan(JumlahDiagnosisTahunan* hitungan, int ukuranHitungan) {
+    int tahunSaatIni = -1;
+    int peringkat = 1;
+
+    for (int i = 0; i < ukuranHitungan; i++) {
+        if (hitungan[i].tahun != tahunSaatIni) {
+            tahunSaatIni = hitungan[i].tahun;
+            printf("\nTahun %d\n", tahunSaatIni);
+            peringkat = 1;
+        }
+
+        printf("%d. %s (%d orang)\n", peringkat++, hitungan[i].diagnosis, hitungan[i].jumlah);
+    }
+}
+
+void analisisDiagnosisBulanan() {
+    FILE* file = fopen("Riwayat_Datang_Pasien.csv", "r");
+    if (!file) {
+        printf("Gagal membuka file\n");
+        return;
+    }
+
+    char line[256];
+    RekamMedis rekam[MAX_RECORDS];
+    int jumlahRekam = 0;
+
+    fgets(line, sizeof(line), file); // Skip header
+
+    while (fgets(line, sizeof(line), file) && jumlahRekam < MAX_RECORDS) {
+        parseRekamMedis(line, &rekam[jumlahRekam]);
+        jumlahRekam++;
+    }
+    fclose(file);
+
+    JumlahDiagnosisBulanan hitungan[MAX_RECORDS];
+    int ukuranHitungan = 0;
+
+    for (int i = 0; i < jumlahRekam; i++) {
+        int bulan;
+        int tahun;
+
+        if (namaBulanDanTahun(rekam[i].tanggal, &bulan, &tahun)) {
+            int index = temukanDiagnosisBulanan(hitungan, ukuranHitungan, bulan, tahun, rekam[i].diagnosis);
+            if (index >= 0) {
+                hitungan[index].jumlah++;
+            } else {
+                hitungan[ukuranHitungan].bulan = bulan;
+                hitungan[ukuranHitungan].tahun = tahun;
+                strcpy(hitungan[ukuranHitungan].diagnosis, rekam[i].diagnosis);
+                hitungan[ukuranHitungan].jumlah = 1;
+                ukuranHitungan++;
+            }
+        }
+    }
+
+    qsort(hitungan, ukuranHitungan, sizeof(JumlahDiagnosisBulanan), bandingkanHitungan);
+
+    cetakHasilBulanan(hitungan, ukuranHitungan);
+}
+
+void analisisDiagnosisTahunan() {
+    FILE* file = fopen("Riwayat_Datang_Pasien.csv", "r");
+    if (!file) {
+        printf("Gagal membuka file\n");
+        return;
+    }
+
+    char line[256];
+    RekamMedis rekam[MAX_RECORDS];
+    int jumlahRekam = 0;
+
+    fgets(line, sizeof(line), file); // Skip header
+
+    while (fgets(line, sizeof(line), file) && jumlahRekam < MAX_RECORDS) {
+        parseRekamMedis(line, &rekam[jumlahRekam]);
+        jumlahRekam++;
+    }
+    fclose(file);
+
+    JumlahDiagnosisTahunan hitungan[MAX_RECORDS];
+    int ukuranHitungan = 0;
+
+    for (int i = 0; i < jumlahRekam; i++) {
+        int bulan;
+        int tahun;
+
+        if (namaBulanDanTahun(rekam[i].tanggal, &bulan, &tahun)) {
+            int index = temukanDiagnosisTahunan(hitungan, ukuranHitungan, tahun, rekam[i].diagnosis);
+            if (index >= 0) {
+                hitungan[index].jumlah++;
+            } else {
+                hitungan[ukuranHitungan].tahun = tahun;
+                strcpy(hitungan[ukuranHitungan].diagnosis, rekam[i].diagnosis);
+                hitungan[ukuranHitungan].jumlah = 1;
+                ukuranHitungan++;
+            }
+        }
+    }
+
+    qsort(hitungan, ukuranHitungan, sizeof(JumlahDiagnosisTahunan), bandingkanHitunganTahunan);
+
+    cetakHasilTahunan(hitungan, ukuranHitungan);
+}
+
+void distribusiPenyakit(){
+    analisisDiagnosisBulanan();
+    analisisDiagnosisTahunan();
+}
+
 int main() {
     // Read data from CSV files
     readPasienFromCSV("DataPMC20232024.csv");
 
+    int jumlahRekam;
     readRiwayatMedisFromCSV("Riwayat_Datang_Pasien.csv");
-    int jumlahRekam = muatRekamMedisPasien(rekam, "Riwayat_Datang_Pasien.csv");
+    
 
     int choice;
     do {
@@ -483,8 +827,8 @@ int main() {
         printf("8. Tampilkan Riwayat Medis\n");
         printf("9. Tampilkan Pasien dan Riwayat Medis\n");
         printf("10. Laporan Pendapatan Bulanan dan Tahunan\n");
-        printf("11. ---\n");
-        printf("12. Tampilkan pasien yang perlu kontrol\n");
+        printf("11. Jenis Penyakit dan Jumlah Pasiennya (perbulan dan pertahun)\n");
+        printf("12. Tampilkan Pasien yang Perlu Kontrol\n");
         printf("0. Keluar\n");
         printf("Pilihan: ");
         scanf("%d", &choice);
@@ -517,9 +861,12 @@ int main() {
                 displayPatientWithMedicalRecords();
                 break;
             case 10:
+                kosongkanRekam();
+                jumlahRekam = muatRekamMedisPasien(rekam, "Riwayat_Datang_Pasien.csv");
                 hitungPendapatanBulananDanTahunan(rekam, jumlahRekam);
                 break;
             case 11:
+                distribusiPenyakit();
                 break;
             case 12:
                 informasiKontrolPasien();
