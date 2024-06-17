@@ -34,59 +34,64 @@
 // int jumlah_pasien = 0;
 // int jumlah_riwayat = 0;
 
-bool cekAdaStrip(char tanggal[50]){
-    int i=0;
-    for(i=0;i<11;i++){
-        if('-' == tanggal[i]){
-            return true;
-        }
-    }
-    return false;
-}
+// bool cekAdaStrip(char tanggal[50]){
+//     int i=0;
+//     for(i=0;i<11;i++){
+//         if('-' == tanggal[i]){
+//             return true;
+//         }
+//     }
+//     return false;
+// }
 
-void ubahKeTanpaStrip(char* tanggalStrip) {
-    char newTanggal[100];
-    char* segment;
-    int day;
-    char month[10];
-    int year;
+// void ubahKeTanpaStrip(char* tanggalStrip) {
+//     char newTanggal[100];
+//     int day;
+//     char month[10];
+//     int year;
     
-    // Mengurai string tanggal menjadi hari, bulan, dan tahun
-    sscanf(tanggalStrip, "%d-%3s-%2d", &day, month, &year);
+// // ubah format tanggal dari (1-Apr-98) ke (1 April 1998)
+// void ubahKeTanpaStrip(char* tanggalStrip) {
+//     char newTanggal[100];
+//     char* segment;
+//     int day;
+//     char month[10];
+//     int year;
+    
+//     // baca jadi 3 segment
+//     sscanf(tanggalStrip, "%d-%3s-%2d", &day, month, &year);
 
-    // Membuat string baru untuk bulan dalam bahasa Indonesia
-    if (strcmp(month, "Jan") == 0) {
-        strcpy(month, "Januari");
-    } else if (strcmp(month, "Feb") == 0) {
-        strcpy(month, "Februari");
-    } else if (strcmp(month, "Mar") == 0) {
-        strcpy(month, "Maret");
-    } else if (strcmp(month, "Apr") == 0) {
-        strcpy(month, "April");
-    } else if (strcmp(month, "May") == 0) {
-        strcpy(month, "Mei");
-    } else if (strcmp(month, "Jun") == 0) {
-        strcpy(month, "Juni");
-    } else if (strcmp(month, "Jul") == 0) {
-        strcpy(month, "Juli");
-    } else if (strcmp(month, "Aug") == 0) {
-        strcpy(month, "Agustus");
-    } else if (strcmp(month, "Sep") == 0) {
-        strcpy(month, "September");
-    } else if (strcmp(month, "Oct") == 0) {
-        strcpy(month, "Oktober");
-    } else if (strcmp(month, "Nov") == 0) {
-        strcpy(month, "November");
-    } else if (strcmp(month, "Dec") == 0) {
-        strcpy(month, "Desember");
-    }
+//     // cek bulan
+//     if (strcmp(month, "Jan") == 0) {
+//         strcpy(month, "Januari");
+//     } else if (strcmp(month, "Feb") == 0) {
+//         strcpy(month, "Februari");
+//     } else if (strcmp(month, "Mar") == 0) {
+//         strcpy(month, "Maret");
+//     } else if (strcmp(month, "Apr") == 0) {
+//         strcpy(month, "April");
+//     } else if (strcmp(month, "May") == 0) {
+//         strcpy(month, "Mei");
+//     } else if (strcmp(month, "Jun") == 0) {
+//         strcpy(month, "Juni");
+//     } else if (strcmp(month, "Jul") == 0) {
+//         strcpy(month, "Juli");
+//     } else if (strcmp(month, "Aug") == 0) {
+//         strcpy(month, "Agustus");
+//     } else if (strcmp(month, "Sep") == 0) {
+//         strcpy(month, "September");
+//     } else if (strcmp(month, "Oct") == 0) {
+//         strcpy(month, "Oktober");
+//     } else if (strcmp(month, "Nov") == 0) {
+//         strcpy(month, "November");
+//     } else if (strcmp(month, "Dec") == 0) {
+//         strcpy(month, "Desember");
+//     }
 
-    // Menggabungkan hari, bulan, dan tahun ke string baru
-    sprintf(newTanggal, "%d %s 20%02d", day, month, year);
-
-    // Menyalin string baru kembali ke tanggalStrip
-    strcpy(tanggalStrip, newTanggal);
-}
+//     // ngegabung
+//     sprintf(newTanggal, "%d %s 20%02d", day, month, year);
+//     strcpy(tanggalStrip, newTanggal);
+// }
 
 void informasiKontrolPasien() {
     bool found = false;

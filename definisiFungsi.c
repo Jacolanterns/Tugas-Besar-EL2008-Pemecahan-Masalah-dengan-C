@@ -4,6 +4,7 @@
 
 Pasien pasien[PASIEN_MAX];
 RiwayatMedis riwayat[RIWAYAT_MAX];
+RekamMedisPasien rekam[PASIEN_MAX];
 int jumlah_pasien = 0;
 int jumlah_riwayat = 0;
 
@@ -50,4 +51,52 @@ int cariPasienID(const char* id_pasien) {
         }
     }
     return -1;
+}
+
+// Fungsi untuk mengecek apakah tanggal mengandung strip
+bool cekAdaStrip(char tanggal[]) {
+    return strchr(tanggal, '-') != NULL;
+}
+
+// ubah format tanggal dari (1-Apr-98) ke (1 April 1998)
+void ubahKeTanpaStrip(char* tanggalStrip) {
+    char newTanggal[100];
+    char* segment;
+    int day;
+    char month[10];
+    int year;
+    
+    // baca jadi 3 segment
+    sscanf(tanggalStrip, "%d-%3s-%2d", &day, month, &year);
+
+    // cek bulan
+    if (strcmp(month, "Jan") == 0) {
+        strcpy(month, "Januari");
+    } else if (strcmp(month, "Feb") == 0) {
+        strcpy(month, "Februari");
+    } else if (strcmp(month, "Mar") == 0) {
+        strcpy(month, "Maret");
+    } else if (strcmp(month, "Apr") == 0) {
+        strcpy(month, "April");
+    } else if (strcmp(month, "May") == 0) {
+        strcpy(month, "Mei");
+    } else if (strcmp(month, "Jun") == 0) {
+        strcpy(month, "Juni");
+    } else if (strcmp(month, "Jul") == 0) {
+        strcpy(month, "Juli");
+    } else if (strcmp(month, "Aug") == 0) {
+        strcpy(month, "Agustus");
+    } else if (strcmp(month, "Sep") == 0) {
+        strcpy(month, "September");
+    } else if (strcmp(month, "Oct") == 0) {
+        strcpy(month, "Oktober");
+    } else if (strcmp(month, "Nov") == 0) {
+        strcpy(month, "November");
+    } else if (strcmp(month, "Dec") == 0) {
+        strcpy(month, "Desember");
+    }
+
+    // ngegabung
+    sprintf(newTanggal, "%d %s 20%02d", day, month, year);
+    strcpy(tanggalStrip, newTanggal);
 }
